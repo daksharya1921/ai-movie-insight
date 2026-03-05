@@ -3,7 +3,21 @@
 A modern, full-stack Next.js application that fetches movie metadata and utilizes Google's Gemini AI to analyze audience sentiment from IMDb reviews.
 
 ## 🚀 Live Demo
-[Insert Deployment Link Here]
+  https://ai-movie-insight-beta.vercel.app/
+  
+---
+
+# ✨ Features
+
+- 🔍 Search any film by IMDb ID (e.g. `tt0133093`)
+- 🎥 Displays movie title, poster, cast, release year, rating & plot
+- 🤖 AI-powered audience sentiment analysis via **Gemini AI**
+- 📊 Sentiment classification — **Positive / Mixed / Negative** with score breakdown
+- 💅 Premium cinematic UI with smooth animations
+- 📱 Fully responsive — works on desktop and mobile
+- ✅ Input validation with graceful error handling
+
+---
 
 ## 🛠️ Tech Stack
 - **Frontend**: Next.js 14+ (App Router), React, Tailwind CSS, Framer Motion, Lucide React
@@ -27,7 +41,7 @@ A modern, full-stack Next.js application that fetches movie metadata and utilize
 ### Local Installation
 1. Clone the repository
 ```bash
-git clone <your-repo-url>
+git clone (https://github.com/daksharya1921/ai-movie-insight.git)
 cd ai-movie-insight
 ```
 
@@ -39,8 +53,8 @@ npm install
 3. Configure Environment Variables
 Create a `.env.local` file in the root directory and add:
 ```env
-NEXT_PUBLIC_OMDB_API_KEY=your_omdb_api_key
-GEMINI_API_KEY=your_gemini_api_key
+NEXT_PUBLIC_OMDB_API_KEY=d66bc07f
+GEMINI_API_KEY=AIzaSyCG6vc0_wzpljql12T9l96IVuABcd3oLWo
 ```
 
 4. Run the development server
@@ -50,7 +64,24 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000) in your browser.
 
+## 🧪 Try These IMDb IDs
+
+| Movie | IMDb ID |
+|-------|---------|
+| The Matrix | `tt0133093` |
+| The Godfather | `tt0068646` |
+| The Shawshank Redemption | `tt0111161` |
+| The Dark Knight | `tt0468569` |
+| Inception | `tt1375666` |
+
+---
+
 ## 📝 Assumptions
 - **IMDb Scraping**: The app scrapes the initial user reviews loaded on the DOM of `https://www.imdb.com/title/{id}/reviews`. If IMDb changes their class names (`.text.show-more__control`), the scraper will return an empty array and the AI will gracefully fallback to a "No reviews available" state.
 - **Token Limits**: Restricted the scrape to the top 10 visible reviews to ensure we stay well within free-tier AI token limits and prompt processing times.
 - **OMDB API**: Assumed OMDB API is reliable for all provided `tt...` IDs.
+
+ ## 👨‍💻 Author
+
+**Daksh Arya**
+GitHub: [@daksharya1921](https://github.com/daksharya1921
