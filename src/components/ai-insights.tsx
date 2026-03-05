@@ -1,6 +1,6 @@
 'use client';
 
-import { Sparkles, TrendingUp, MinusCircle, AlertTriangle } from 'lucide-react';
+import { Sparkles, TrendingUp, MinusCircle, AlertTriangle, Fingerprint, Activity } from 'lucide-react';
 import { twMerge } from 'tailwind-merge';
 
 interface SentimentData {
@@ -13,61 +13,87 @@ export default function AiInsights({ sentiment }: { sentiment: SentimentData }) 
     const isMixed = sentiment.classification.toLowerCase() === 'mixed';
     const isNegative = sentiment.classification.toLowerCase() === 'negative';
 
-    // Determine styling based on sentiment classification
-    let themeColor = 'bg-blue-500/10 text-blue-400 border-blue-500/20';
-    let glowColor = 'from-blue-500/0 via-blue-500/10 to-transparent';
-    let Icon = Sparkles;
+    let statusText = "Neutral Outcome";
+    let accentColor = "text-[var(--gold-muted)]";
+    let borderColor = "border-[var(--gold-muted)]/20";
+    let Icon = Fingerprint;
 
     if (isPositive) {
-        themeColor = 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30';
-        glowColor = 'from-emerald-500/0 via-emerald-500/15 to-transparent';
+        statusText = "Optimistic Reception";
+        accentColor = "text-emerald-400";
+        borderColor = "border-emerald-400/20";
         Icon = TrendingUp;
     } else if (isMixed) {
-        themeColor = 'bg-yellow-500/10 text-yellow-400 border-yellow-500/30';
-        glowColor = 'from-yellow-500/0 via-yellow-500/15 to-transparent';
-        Icon = MinusCircle;
+        statusText = "Ambivalent Signals";
+        accentColor = "text-[var(--gold-bright)]";
+        borderColor = "border-[var(--gold-bright)]/20";
+        Icon = Activity;
     } else if (isNegative) {
-        themeColor = 'bg-red-500/10 text-red-400 border-red-500/30';
-        glowColor = 'from-red-500/0 via-red-500/15 to-transparent';
+        statusText = "Critical Resistance";
+        accentColor = "text-red-400";
+        borderColor = "border-red-400/20";
         Icon = AlertTriangle;
     }
 
     return (
-        <div className="relative glass-card rounded-3xl p-8 overflow-hidden h-full flex flex-col justify-center border border-zinc-800/60 shadow-2xl">
+        <div className="relative bg-zinc-950/40 border border-[var(--gold-muted)]/20 p-6 md:p-8 flex flex-col justify-between h-full group">
+            {/* Top Bar Detail */}
+            <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-[var(--gold-muted)]/20 to-transparent" />
 
-            {/* Dynamic Background Glow based on sentiment */}
-            <div className={twMerge("absolute inset-x-0 bottom-0 h-48 bg-gradient-to-t pointer-events-none", glowColor)}></div>
-
-            <div className="relative z-10">
-                <div className="flex items-center gap-3 mb-8 border-b border-zinc-800/80 pb-6">
-                    <div className="p-3 bg-zinc-900 rounded-2xl border border-zinc-800/50 shadow-inner">
-                        <Sparkles className="w-6 h-6 text-indigo-400" />
-                    </div>
+            <div className="relative z-10 space-y-8">
+                {/* Header Section */}
+                <div className="flex items-start justify-between">
                     <div>
-                        <h3 className="text-lg font-bold text-white tracking-tight">AI Analysis</h3>
-                        <p className="text-xs text-zinc-500 uppercase tracking-widest font-semibold mt-0.5">Audience Sentiment</p>
+                        <span className="text-[10px] uppercase tracking-[0.4em] text-[var(--gold-muted)] font-mono block mb-1">Intelligence Report</span>
+                        <h3 className="text-2xl font-serif text-[var(--cream-main)] italic">Audience Synthesis</h3>
+                    </div>
+                    <div className="w-10 h-10 border border-[var(--gold-muted)]/20 flex items-center justify-center bg-zinc-900/50">
+                        <Sparkles className="w-4 h-4 text-[var(--gold-muted)]" />
                     </div>
                 </div>
 
-                <div className="space-y-6">
-                    {/* Classification Badge */}
-                    <div>
-                        <div className="text-xs text-zinc-500 uppercase tracking-widest font-semibold mb-3">Overall Verdict</div>
-                        <div className={twMerge("inline-flex items-center gap-2 px-4 py-2 rounded-xl border font-bold text-sm tracking-wide shadow-lg", themeColor)}>
-                            <Icon className="w-5 h-5" />
-                            {sentiment.classification.toUpperCase()}
-                        </div>
+                {/* Verdict Section */}
+                <div className="space-y-4">
+                    <div className="flex items-center gap-3">
+                        <div className="w-2 h-2 rounded-full bg-[var(--gold-bright)] animate-pulse" />
+                        <span className="text-[10px] uppercase tracking-widest text-[var(--gold-muted)] font-mono">Archive Classification</span>
                     </div>
 
-                    {/* AI Summary Text */}
-                    <div className="pt-2">
-                        <div className="text-xs text-zinc-500 uppercase tracking-widest font-semibold mb-3 lg:mt-6">Summary Insights</div>
-                        <div className="bg-zinc-900/40 rounded-2xl p-6 border border-zinc-800/60 shadow-inner">
-                            <p className="text-zinc-300 leading-relaxed italic text-lg decoration-zinc-800/50">
-                                "{sentiment.summary}"
-                            </p>
+                    <div className={twMerge(
+                        "inline-flex items-center gap-4 px-6 py-3 border bg-black/40 backdrop-blur-sm",
+                        borderColor
+                    )}>
+                        <Icon className={twMerge("w-5 h-5", accentColor)} />
+                        <div>
+                            <span className={twMerge("block text-sm font-bold uppercase tracking-[0.2em] leading-none mb-1", accentColor)}>
+                                {sentiment.classification}
+                            </span>
+                            <span className="block text-[8px] uppercase tracking-widest text-zinc-500 font-mono">
+                                {statusText}
+                            </span>
                         </div>
                     </div>
+                </div>
+
+                {/* Narrative Summary */}
+                <div className="space-y-4">
+                    <div className="h-px w-full bg-gradient-to-r from-[var(--gold-muted)]/20 to-transparent" />
+                    <p className="text-[var(--cream-main)]/80 italic text-xl leading-relaxed font-serif relative">
+                        <span className="text-4xl absolute -top-4 -left-2 opacity-10 font-serif text-[var(--gold-bright)]">"</span>
+                        {sentiment.summary}
+                        <span className="text-4xl absolute -bottom-10 opacity-10 font-serif text-[var(--gold-bright)]">"</span>
+                    </p>
+                </div>
+            </div>
+
+            {/* Bottom Utility Detail */}
+            <div className="mt-12 flex items-center justify-between pt-6 border-t border-[var(--gold-muted)]/10">
+                <div className="flex items-center gap-2">
+                    <div className="w-1 h-1 bg-[var(--gold-muted)] rounded-full" />
+                    <span className="text-[8px] uppercase tracking-[0.5em] text-[var(--gold-muted)] font-mono">Secure Node / AI-G 1.5</span>
+                </div>
+                <div className="text-[8px] uppercase tracking-[0.3em] text-[var(--gold-muted)] font-mono opacity-30">
+                    ID: {Math.random().toString(36).substr(2, 9).toUpperCase()}
                 </div>
             </div>
         </div>

@@ -10,62 +10,57 @@ interface MovieSearchProps {
 }
 
 export default function MovieSearch({ onSearch, isLoading }: MovieSearchProps) {
-    const [imdbId, setImdbId] = useState('');
+    const [query, setQuery] = useState('');
     const [error, setError] = useState('');
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         setError('');
 
-        const trimmedId = imdbId.trim();
-        if (!trimmedId) {
-            setError('Please enter an IMDb ID');
+        const trimmedQuery = query.trim();
+        if (!trimmedQuery) {
+            setError('Enter a title or IMDb ID');
             return;
         }
 
-        if (!/^tt\d{7,8}$/.test(trimmedId)) {
-            setError('Invalid format. Must be like "tt0133093"');
-            return;
-        }
-
-        onSearch(trimmedId);
+        onSearch(trimmedQuery);
     };
 
     return (
         <div className="w-full">
             <form onSubmit={handleSubmit} className="relative group flex items-center w-full">
                 {/* Animated Glow Border Frame */}
-                <div className="absolute -inset-0.5 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full blur opacity-30 group-hover:opacity-60 transition duration-500"></div>
+                <div className="absolute -inset-0.5 bg-gradient-to-r from-[var(--gold-muted)] to-[var(--gold-bright)] rounded-full blur opacity-20 group-hover:opacity-40 transition duration-500"></div>
 
-                <div className="relative flex items-center w-full bg-[#09090b]/80 backdrop-blur-md rounded-full border border-zinc-800 focus-within:border-blue-500/50 transition-colors p-1.5 shadow-2xl overflow-hidden">
+                <div className="relative flex items-center w-full bg-[#09090b]/80 backdrop-blur-md rounded-full border border-zinc-800 focus-within:border-[var(--gold-bright)]/30 transition-colors p-1.5 shadow-2xl overflow-hidden">
                     <div className="pl-4 pr-3 text-zinc-500">
-                        <Search className="w-5 h-5" />
+                        <Search className="w-5 h-5 text-[var(--gold-muted)]" />
                     </div>
                     <input
                         type="text"
-                        value={imdbId}
-                        onChange={(e) => setImdbId(e.target.value)}
+                        value={query}
+                        onChange={(e) => setQuery(e.target.value)}
                         disabled={isLoading}
-                        placeholder="e.g., tt0133093 (The Matrix)"
-                        className="flex-1 bg-transparent border-none outline-none text-zinc-100 placeholder-zinc-600 text-lg py-3 px-1"
+                        placeholder="Search by Title or IMDb ID (e.g., The Matrix or tt0133093)"
+                        className="flex-1 bg-transparent border-none outline-none text-[var(--cream-main)] placeholder-zinc-700 text-lg py-3 px-1"
                     />
                     <button
                         type="submit"
                         disabled={isLoading}
                         className={twMerge(
-                            "ml-2 flex items-center justify-center gap-2 bg-zinc-100 text-zinc-900 rounded-full px-6 py-3 font-medium transition-all duration-300 hover:bg-white hover:scale-105 active:scale-95 disabled:opacity-50 disabled:pointer-events-none",
-                            "shadow-[0_0_20px_rgba(255,255,255,0.2)]"
+                            "ml-2 flex items-center justify-center gap-2 bg-[var(--gold-bright)] text-zinc-950 rounded-full px-8 py-3.5 font-bold transition-all duration-300 hover:bg-[var(--cream-main)] hover:scale-105 active:scale-95 disabled:opacity-50 disabled:pointer-events-none",
+                            "shadow-[0_0_20px_rgba(238,228,206,0.15)] uppercase tracking-widest text-xs"
                         )}
                     >
-                        {isLoading ? 'Analyzing' : 'Search'}
+                        {isLoading ? 'Decrypting' : 'Analyze'}
                         {isLoading ? (
-                            <span className="w-1.5 h-1.5 rounded-full bg-zinc-900 animate-bounce ml-1 flex gap-1">
-                                <span className="w-1 h-1 bg-zinc-900 rounded-full animate-ping" style={{ animationDelay: '0ms' }} />
-                                <span className="w-1 h-1 bg-zinc-900 rounded-full animate-ping" style={{ animationDelay: '150ms' }} />
-                                <span className="w-1 h-1 bg-zinc-900 rounded-full animate-ping" style={{ animationDelay: '300ms' }} />
-                            </span>
+                            <div className="flex gap-1 ml-2">
+                                <div className="w-1 h-1 bg-black rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                                <div className="w-1 h-1 bg-black rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                                <div className="w-1 h-1 bg-black rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+                            </div>
                         ) : (
-                            <ArrowRight className="w-4 h-4 ml-1" />
+                            <ArrowRight className="w-3.5 h-3.5 ml-1" />
                         )}
                     </button>
                 </div>

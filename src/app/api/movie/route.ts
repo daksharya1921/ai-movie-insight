@@ -8,9 +8,17 @@ const GEMINI_API_KEY = process.env.GEMINI_API_KEY;
 // Initialize Google Gen AI
 const ai = new GoogleGenAI({ apiKey: GEMINI_API_KEY });
 
-async function fetchOmdbData(imdbId: string) {
+async function fetchOmdbData(id?: string, title?: string) {
   const OMDB_API_KEY = process.env.NEXT_PUBLIC_OMDB_API_KEY;
-  const url = `http://www.omdbapi.com/?i=${imdbId}&apikey=${OMDB_API_KEY}`;
+  let url = `http://www.omdbapi.com/?apikey=${OMDB_API_KEY}`;
+
+  if (id) {
+    url += `&i=${id}`;
+  } else if (title) {
+    url += `&t=${encodeURIComponent(title)}`;
+  } else {
+    throw new Error('No search criteria provided');
+  }
 
   const res = await fetch(url);
   if (!res.ok) {
@@ -101,20 +109,24 @@ async function analyzeSentiment(reviews: string[]) {
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
-  const imdbId = searchParams.get('id');
+  const query = searchParams.get('query') || searchParams.get('id');
 
-  if (!imdbId || !/^tt\d{7,8}$/.test(imdbId)) {
-    return NextResponse.json({ error: 'Invalid or missing IMDb ID. Expected format: tt0133093' }, { status: 400 });
+  if (!query) {
+    return NextResponse.json({ error: 'Search query is required' }, { status: 400 });
   }
 
   try {
-    // 1. Fetch from OMDB (fast, required)
-    const omdbData = await fetchOmdbData(imdbId);
+    // 1. Determine if it's an ID or a Title
+    const isId = /^tt\d{7,8}$/.test(query);
 
-    // 2. Scrape reviews (might be slow, fire parallelly with OMDB? Let's just do sequential for simplicity and error trapping first)
-    const reviews = await scrapeImdbReviews(imdbId);
+    // 2. Fetch from OMDB
+    const omdbData = await fetchOmdbData(isId ? query : undefined, isId ? undefined : query);
+    const resolvedId = omdbData.imdbID;
 
-    // 3. Analyze Sentiment if we have reviews
+    // 3. Scrape reviews using the resolved ID
+    const reviews = await scrapeImdbReviews(resolvedId);
+
+    // 4. Analyze Sentiment
     const sentiment = await analyzeSentiment(reviews);
 
     // Filter relevant fields for the frontend
@@ -128,12 +140,14 @@ export async function GET(request: Request) {
       actors: omdbData.Actors,
       plot: omdbData.Plot,
       poster: omdbData.Poster !== 'N/A' ? omdbData.Poster : null,
+      imdbId: resolvedId,
       imdbRating: omdbData.imdbRating,
       imdbVotes: omdbData.imdbVotes,
       country: omdbData.Country,
       awards: omdbData.Awards,
       language: omdbData.Language,
       boxOffice: omdbData.BoxOffice,
+      trailerUrl: `https://www.youtube.com/results?search_query=${encodeURIComponent(omdbData.Title + ' ' + omdbData.Year + ' official trailer')}`,
       aiInsights: sentiment,
     };
 

@@ -12,22 +12,21 @@ export default function Home() {
     const [error, setError] = useState<string | null>(null);
     const [movieData, setMovieData] = useState<any | null>(null);
 
-    const handleSearch = async (imdbId: string) => {
+    const handleSearch = async (query: string) => {
         setLoading(true);
         setError(null);
         setMovieData(null);
 
         try {
-            const response = await fetch(`/api/movie?id=${imdbId}`);
-            const data = await response.json();
-
-            if (!response.ok) {
-                throw new Error(data.error || 'Failed to fetch movie data');
+            const res = await fetch(`/api/movie?query=${encodeURIComponent(query)}`);
+            if (!res.ok) {
+                const errData = await res.json();
+                throw new Error(errData.error || 'Archive retrieval failed');
             }
-
+            const data = await res.json();
             setMovieData(data);
         } catch (err: any) {
-            setError(err.message || 'An unexpected error occurred');
+            setError(err.message);
         } finally {
             setLoading(false);
         }
@@ -129,13 +128,13 @@ export default function Home() {
                                     <AiInsights sentiment={movieData.aiInsights || { classification: 'Mixed', summary: 'Insights currently unavailable.' }} />
 
                                     {/* Additional decorative panel */}
-                                    <div className="panel corners" style={{ padding: '1.5rem', opacity: 0.5 }}>
-                                        <p className="lbl" style={{ marginBottom: '0.5rem' }}>Technical Note</p>
-                                        <p style={{ fontSize: '0.75rem', lineHeight: 1.5 }}>
-                                            Scraping performed on IMDb live review clusters. Data synthesized via Gemini 1.5 Flash.
-                                        </p>
-                                    </div>
-                                </div>
+                                    <span className="text-[10px] uppercase tracking-[0.4em] font-mono mb-2 block">Archive System v4.0</span>
+                                    <h1 className="text-5xl md:text-8xl font-serif text-[var(--cream-main)] italic leading-none mb-6">
+                                        The Cinema <br /> <span className="text-[var(--gold-bright)]">Archive</span>
+                                    </h1>
+                                    <p className="text-[var(--gold-muted)]/60 max-w-xl text-xs md:text-sm uppercase tracking-[0.2em] leading-relaxed mb-10 font-mono">
+                                        Uncover deep audience sentiments, cinematic details, and AI-curated insights from the global film database.
+                                    </p></div>
                             </motion.div>
                         )}
                     </AnimatePresence>
