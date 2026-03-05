@@ -1,0 +1,166 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Space+Mono&display=swap');
+@import "tailwindcss";
+
+:root {
+  --background: #080808;
+  --surface: #111111;
+  --border: #222222;
+  --gold: #dca050;
+  --gold-dim: #9a7a4a;
+  --cream: #f5ead8;
+  --cream-dim: rgba(245, 234, 216, 0.4);
+}
+
+body {
+  background: var(--background);
+  color: var(--cream);
+  font-family: 'Cormorant Garamond', serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Panel System */
+.panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  position: relative;
+  transition: all 0.4s ease;
+}
+
+.corners::before,
+.corners::after {
+  content: '';
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  border: 1px solid var(--gold);
+  pointer-events: none;
+}
+
+.corners::before {
+  top: -1px;
+  left: -1px;
+  border-right: none;
+  border-bottom: none;
+}
+
+.corners::after {
+  bottom: -1px;
+  right: -1px;
+  border-left: none;
+  border-top: none;
+}
+
+/* Labels & Typography */
+.lbl {
+  font-family: 'Space Mono', monospace;
+  font-size: 0.6rem;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--gold-dim);
+}
+
+.rule {
+  height: 1px;
+  background: var(--border);
+}
+
+/* Badges */
+.badge {
+  padding: 0.2rem 0.6rem;
+  font-size: 0.6rem;
+  font-family: 'Space Mono', monospace;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.badge-gold {
+  background: rgba(220, 160, 80, 0.1);
+  color: var(--gold);
+  border: 1px solid rgba(220, 160, 80, 0.3);
+}
+
+.badge-muted {
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--cream-dim);
+  border: 1px solid var(--border);
+}
+
+/* Bars */
+.bar {
+  height: 2px;
+  background: var(--border);
+  overflow: hidden;
+}
+
+.bar-fill {
+  height: 100%;
+  background: var(--gold);
+}
+
+.bar-pos {
+  background: #5a9a6a;
+}
+
+.bar-neg {
+  background: #9a3a2a;
+}
+
+.bar-neu {
+  background: rgba(245, 234, 216, 0.2);
+}
+
+/* Search Custom */
+.search-wrap {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+}
+
+.search-input {
+  background: transparent;
+  border: none;
+  color: var(--cream);
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 1.1rem;
+  padding: 0 1rem;
+  width: 100%;
+}
+
+.search-input:focus {
+  outline: none;
+}
+
+.btn {
+  background: transparent;
+  color: var(--gold);
+  font-family: 'Space Mono', monospace;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  padding: 0 1.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn:hover:not(:disabled) {
+  background: var(--gold);
+  color: #000;
+}
+
+.btn:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
