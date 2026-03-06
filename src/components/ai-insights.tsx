@@ -1,101 +1,195 @@
 'use client';
 
-import { Sparkles, TrendingUp, MinusCircle, AlertTriangle, Fingerprint, Activity } from 'lucide-react';
-import { twMerge } from 'tailwind-merge';
+import { motion } from 'framer-motion';
+import { Sparkles, TrendingUp, Activity, AlertTriangle, Fingerprint, Zap } from 'lucide-react';
 
 interface SentimentData {
     classification: string;
     summary: string;
 }
 
+const classMap: Record<string, {
+    label: string;
+    icon: React.ElementType;
+    color: string;
+    glow: string;
+    bg: string;
+    border: string;
+}> = {
+    positive: {
+        label: 'Optimistic Reception',
+        icon: TrendingUp,
+        color: 'var(--green)',
+        glow: 'rgba(76,175,130,0.12)',
+        bg: 'rgba(76,175,130,0.07)',
+        border: 'rgba(76,175,130,0.25)',
+    },
+    mixed: {
+        label: 'Ambivalent Signals',
+        icon: Activity,
+        color: 'var(--gold-hi)',
+        glow: 'rgba(232,180,90,0.12)',
+        bg: 'rgba(232,180,90,0.07)',
+        border: 'rgba(232,180,90,0.25)',
+    },
+    negative: {
+        label: 'Critical Resistance',
+        icon: AlertTriangle,
+        color: 'var(--red)',
+        glow: 'rgba(192,80,64,0.12)',
+        bg: 'rgba(192,80,64,0.07)',
+        border: 'rgba(192,80,64,0.25)',
+    },
+    neutral: {
+        label: 'Neutral Outcome',
+        icon: Fingerprint,
+        color: 'var(--gold-text)',
+        glow: 'rgba(212,160,74,0.12)',
+        bg: 'rgba(212,160,74,0.07)',
+        border: 'rgba(212,160,74,0.25)',
+    },
+};
+
 export default function AiInsights({ sentiment }: { sentiment: SentimentData }) {
-    const isPositive = sentiment.classification.toLowerCase() === 'positive';
-    const isMixed = sentiment.classification.toLowerCase() === 'mixed';
-    const isNegative = sentiment.classification.toLowerCase() === 'negative';
-
-    let statusText = "Neutral Outcome";
-    let accentColor = "text-[var(--gold-muted)]";
-    let borderColor = "border-[var(--gold-muted)]/20";
-    let Icon = Fingerprint;
-
-    if (isPositive) {
-        statusText = "Optimistic Reception";
-        accentColor = "text-emerald-400";
-        borderColor = "border-emerald-400/20";
-        Icon = TrendingUp;
-    } else if (isMixed) {
-        statusText = "Ambivalent Signals";
-        accentColor = "text-[var(--gold-bright)]";
-        borderColor = "border-[var(--gold-bright)]/20";
-        Icon = Activity;
-    } else if (isNegative) {
-        statusText = "Critical Resistance";
-        accentColor = "text-red-400";
-        borderColor = "border-red-400/20";
-        Icon = AlertTriangle;
-    }
+    const key = sentiment.classification.toLowerCase() as keyof typeof classMap;
+    const cfg = classMap[key] ?? classMap.neutral;
+    const Icon = cfg.icon;
 
     return (
-        <div className="relative bg-zinc-950/40 border border-[var(--gold-muted)]/20 p-6 md:p-8 flex flex-col justify-between h-full group">
-            {/* Top Bar Detail */}
-            <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-[var(--gold-muted)]/20 to-transparent" />
+        <motion.div
+            initial={{ opacity: 0, y: 14 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.15 }}
+            className="panel relative flex flex-col h-full overflow-hidden"
+        >
+            {/* Top accent line */}
+            <div
+                className="absolute inset-x-0 top-0 h-px pointer-events-none"
+                style={{ background: `linear-gradient(90deg, transparent, ${cfg.color}50, transparent)` }}
+            />
 
-            <div className="relative z-10 space-y-8">
-                {/* Header Section */}
+            {/* Ambient glow in the verdict color */}
+            <div
+                className="absolute -top-16 -right-16 w-48 h-48 rounded-full blur-3xl pointer-events-none opacity-30"
+                style={{ background: cfg.glow }}
+            />
+
+            <div className="relative z-10 p-6 md:p-8 flex flex-col gap-6 h-full">
+
+                {/* ── Header ── */}
                 <div className="flex items-start justify-between">
                     <div>
-                        <span className="text-[10px] uppercase tracking-[0.4em] text-[var(--gold-muted)] font-mono block mb-1">Intelligence Report</span>
-                        <h3 className="text-2xl font-serif text-[var(--cream-main)] italic">Audience Synthesis</h3>
+                        <span className="lbl mb-1">Intelligence Report</span>
+                        <h3
+                            className="text-2xl italic leading-snug"
+                            style={{ fontFamily: "'Playfair Display', serif", color: 'var(--cream)' }}
+                        >
+                            Audience Synthesis
+                        </h3>
                     </div>
-                    <div className="w-10 h-10 border border-[var(--gold-muted)]/20 flex items-center justify-center bg-zinc-900/50">
-                        <Sparkles className="w-4 h-4 text-[var(--gold-muted)]" />
+                    <div
+                        className="w-10 h-10 flex items-center justify-center flex-shrink-0"
+                        style={{ border: '1px solid var(--border-hi)', background: 'var(--cream-06)' }}
+                    >
+                        <Sparkles className="w-4 h-4" style={{ color: 'var(--gold-text)' }} />
                     </div>
                 </div>
 
-                {/* Verdict Section */}
-                <div className="space-y-4">
-                    <div className="flex items-center gap-3">
-                        <div className="w-2 h-2 rounded-full bg-[var(--gold-bright)] animate-pulse" />
-                        <span className="text-[10px] uppercase tracking-widest text-[var(--gold-muted)] font-mono">Archive Classification</span>
+                {/* ── Divider ── */}
+                <div className="h-px" style={{ background: 'var(--border)' }} />
+
+                {/* ── Verdict Badge ── */}
+                <div className="space-y-3">
+                    <div className="flex items-center gap-2">
+                        <div
+                            className="w-1.5 h-1.5 rounded-full"
+                            style={{ background: cfg.color, boxShadow: `0 0 8px ${cfg.color}` }}
+                        />
+                        <span className="lbl" style={{ color: 'var(--gold-dim)' }}>Archive Classification</span>
                     </div>
 
-                    <div className={twMerge(
-                        "inline-flex items-center gap-4 px-6 py-3 border bg-black/40 backdrop-blur-sm",
-                        borderColor
-                    )}>
-                        <Icon className={twMerge("w-5 h-5", accentColor)} />
+                    <div
+                        className="inline-flex items-center gap-3 px-5 py-3"
+                        style={{
+                            background: cfg.bg,
+                            border: `1px solid ${cfg.border}`,
+                        }}
+                    >
+                        <Icon className="w-4 h-4 flex-shrink-0" style={{ color: cfg.color }} />
                         <div>
-                            <span className={twMerge("block text-sm font-bold uppercase tracking-[0.2em] leading-none mb-1", accentColor)}>
+                            <span
+                                className="block text-sm font-bold uppercase tracking-widest leading-none mb-0.5"
+                                style={{ color: cfg.color, fontFamily: "'Space Mono', monospace" }}
+                            >
                                 {sentiment.classification}
                             </span>
-                            <span className="block text-[8px] uppercase tracking-widest text-zinc-500 font-mono">
-                                {statusText}
+                            <span
+                                className="block text-[9px] uppercase tracking-widest"
+                                style={{ color: 'var(--cream-30)', fontFamily: "'Space Mono', monospace" }}
+                            >
+                                {cfg.label}
                             </span>
                         </div>
                     </div>
                 </div>
 
-                {/* Narrative Summary */}
-                <div className="space-y-4">
-                    <div className="h-px w-full bg-gradient-to-r from-[var(--gold-muted)]/20 to-transparent" />
-                    <p className="text-[var(--cream-main)]/80 italic text-xl leading-relaxed font-serif relative">
-                        <span className="text-4xl absolute -top-4 -left-2 opacity-10 font-serif text-[var(--gold-bright)]">"</span>
-                        {sentiment.summary}
-                        <span className="text-4xl absolute -bottom-10 opacity-10 font-serif text-[var(--gold-bright)]">"</span>
-                    </p>
-                </div>
-            </div>
+                {/* ── Divider ── */}
+                <div className="h-px" style={{ background: 'var(--border)' }} />
 
-            {/* Bottom Utility Detail */}
-            <div className="mt-12 flex items-center justify-between pt-6 border-t border-[var(--gold-muted)]/10">
-                <div className="flex items-center gap-2">
-                    <div className="w-1 h-1 bg-[var(--gold-muted)] rounded-full" />
-                    <span className="text-[8px] uppercase tracking-[0.5em] text-[var(--gold-muted)] font-mono">Secure Node / AI-G 1.5</span>
+                {/* ── Summary ── */}
+                <div className="flex-1 space-y-3">
+                    <span className="lbl">Narrative Analysis</span>
+                    <div
+                        className="relative p-5"
+                        style={{
+                            background: 'var(--cream-06)',
+                            borderLeft: `2px solid ${cfg.border}`,
+                        }}
+                    >
+                        {/* Decorative quote */}
+                        <span
+                            className="absolute -top-3 left-4 text-5xl leading-none select-none pointer-events-none"
+                            style={{ color: cfg.color, opacity: 0.15, fontFamily: "'Playfair Display', serif" }}
+                        >
+                            "
+                        </span>
+                        <p
+                            className="italic leading-relaxed relative z-10"
+                            style={{
+                                fontFamily: "'Cormorant Garamond', serif",
+                                fontSize: '1.05rem',
+                                color: 'var(--cream-60)',
+                            }}
+                        >
+                            {sentiment.summary}
+                        </p>
+                    </div>
                 </div>
-                <div className="text-[8px] uppercase tracking-[0.3em] text-[var(--gold-muted)] font-mono opacity-30">
-                    ID: {Math.random().toString(36).substr(2, 9).toUpperCase()}
+
+                {/* ── Footer ── */}
+                <div
+                    className="flex items-center justify-between pt-4"
+                    style={{ borderTop: '1px solid var(--border)' }}
+                >
+                    <div className="flex items-center gap-2">
+                        <Zap className="w-2.5 h-2.5" style={{ color: 'var(--gold-dim)' }} />
+                        <span
+                            className="text-[8px] uppercase tracking-widest"
+                            style={{ color: 'var(--cream-30)', fontFamily: "'Space Mono', monospace" }}
+                        >
+                            Gemini AI · IMDb Clusters
+                        </span>
+                    </div>
+                    <span
+                        className="text-[8px] uppercase tracking-widest opacity-30"
+                        style={{ color: 'var(--cream-30)', fontFamily: "'Space Mono', monospace" }}
+                    >
+                        ID: {Math.random().toString(36).substr(2, 9).toUpperCase()}
+                    </span>
                 </div>
             </div>
-        </div>
+        </motion.div>
     );
 }
+
+export type { SentimentData };

@@ -1,8 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Search, ArrowRight } from 'lucide-react';
-import { twMerge } from 'tailwind-merge';
+import { Search, ArrowRight, Loader2 } from 'lucide-react';
 
 interface MovieSearchProps {
     onSearch: (id: string) => void;
@@ -16,60 +15,95 @@ export default function MovieSearch({ onSearch, isLoading }: MovieSearchProps) {
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         setError('');
-
-        const trimmedQuery = query.trim();
-        if (!trimmedQuery) {
+        const trimmed = query.trim();
+        if (!trimmed) {
             setError('Enter a title or IMDb ID');
             return;
         }
-
-        onSearch(trimmedQuery);
+        onSearch(trimmed);
     };
 
     return (
-        <div className="w-full">
+        <div className="w-full relative">
             <form onSubmit={handleSubmit} className="relative group flex items-center w-full">
-                {/* Animated Glow Border Frame */}
-                <div className="absolute -inset-0.5 bg-gradient-to-r from-[var(--gold-muted)] to-[var(--gold-bright)] rounded-full blur opacity-20 group-hover:opacity-40 transition duration-500"></div>
+                {/* Ambient glow */}
+                <div
+                    className="pointer-events-none absolute -inset-1 blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-700"
+                    style={{ background: 'radial-gradient(ellipse at center, rgba(201,144,58,0.08) 0%, transparent 70%)' }}
+                />
 
-                <div className="relative flex items-center w-full bg-[#09090b]/80 backdrop-blur-md rounded-full border border-zinc-800 focus-within:border-[var(--gold-bright)]/30 transition-colors p-1.5 shadow-2xl overflow-hidden">
-                    <div className="pl-4 pr-3 text-zinc-500">
-                        <Search className="w-5 h-5 text-[var(--gold-muted)]" />
+                {/* Main bar */}
+                <div
+                    className="relative flex items-center w-full overflow-hidden"
+                    style={{
+                        background: 'var(--surface)',
+                        border: '1px solid var(--border-hi)',
+                        boxShadow: '0 16px 48px rgba(0,0,0,0.5), inset 0 1px 0 rgba(240,230,208,0.04)',
+                    }}
+                >
+                    {/* Left icon */}
+                    <div className="pl-5 pr-3 flex-shrink-0">
+                        <Search
+                            className="w-4 h-4 transition-colors duration-300"
+                            style={{ color: isLoading ? 'var(--gold-hi)' : 'var(--gold-muted)' }}
+                        />
                     </div>
+
+                    {/* Input */}
                     <input
                         type="text"
                         value={query}
                         onChange={(e) => setQuery(e.target.value)}
                         disabled={isLoading}
-                        placeholder="Search by Title or IMDb ID (e.g., The Matrix or tt0133093)"
-                        className="flex-1 bg-transparent border-none outline-none text-[var(--cream-main)] placeholder-zinc-700 text-lg py-3 px-1"
+                        placeholder="Search by title or IMDb ID…"
+                        className="search-input flex-1 py-4 text-base disabled:opacity-60"
+                        style={{ fontFamily: "'Space Mono', monospace", fontSize: '0.85rem' }}
                     />
+
+                    {/* Divider */}
+                    <div className="w-px h-8 flex-shrink-0" style={{ background: 'var(--border-hi)' }} />
+
+                    {/* Submit button */}
                     <button
                         type="submit"
                         disabled={isLoading}
-                        className={twMerge(
-                            "ml-2 flex items-center justify-center gap-2 bg-[var(--gold-bright)] text-zinc-950 rounded-full px-8 py-3.5 font-bold transition-all duration-300 hover:bg-[var(--cream-main)] hover:scale-105 active:scale-95 disabled:opacity-50 disabled:pointer-events-none",
-                            "shadow-[0_0_20px_rgba(238,228,206,0.15)] uppercase tracking-widest text-xs"
-                        )}
+                        className="flex items-center gap-2.5 px-6 py-4 font-bold text-xs uppercase tracking-widest transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex-shrink-0"
+                        style={{
+                            fontFamily: "'Space Mono', monospace",
+                            color: 'var(--gold-text)',
+                            background: 'transparent',
+                        }}
+                        onMouseEnter={(e) => {
+                            if (!isLoading) (e.currentTarget as HTMLElement).style.background = 'rgba(201,144,58,0.1)';
+                        }}
+                        onMouseLeave={(e) => {
+                            (e.currentTarget as HTMLElement).style.background = 'transparent';
+                        }}
                     >
-                        {isLoading ? 'Decrypting' : 'Analyze'}
                         {isLoading ? (
-                            <div className="flex gap-1 ml-2">
-                                <div className="w-1 h-1 bg-black rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
-                                <div className="w-1 h-1 bg-black rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
-                                <div className="w-1 h-1 bg-black rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
-                            </div>
+                            <>
+                                <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                                <span>Analyzing</span>
+                            </>
                         ) : (
-                            <ArrowRight className="w-3.5 h-3.5 ml-1" />
+                            <>
+                                <span>Analyze</span>
+                                <ArrowRight className="w-3.5 h-3.5" />
+                            </>
                         )}
                     </button>
                 </div>
             </form>
 
-            {/* Error Message Space (absolute to not shift layout) */}
-            <div className="absolute left-6 -bottom-6 text-sm text-red-400 font-medium">
-                {error}
-            </div>
+            {/* Error */}
+            {error && (
+                <p
+                    className="absolute left-0 mt-2 text-xs font-mono uppercase tracking-widest"
+                    style={{ color: 'var(--red)', top: '100%' }}
+                >
+                    ↳ {error}
+                </p>
+            )}
         </div>
     );
 }
