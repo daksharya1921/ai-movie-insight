@@ -103,7 +103,7 @@ async function scrapeImdbReviews(imdbId: string): Promise<string[]> {
 // How the request is made
 // ───────────────────────
 //   ai.models.generateContent({ model, contents })
-//     • `model`    – just the short model identifier, e.g. "gemini-2.5-flash".
+//     • `model`    – just the short model identifier, e.g. "gemini-2.0-flash".
 //                    DO NOT prefix with "models/" – that is only needed in the
 //                    REST API, not in this SDK.
 //     • `contents` – plain string or Content[] array.
@@ -208,12 +208,14 @@ ${reviewsText}
       classification: 'Mixed',
       summary: isLeaked
         ? 'CRITICAL SECURITY ERROR: Your Gemini API key has been reported as leaked and disabled by Google. Please generate a new key in Google AI Studio and update your .env.local file.'
-        : `AI analysis is temporarily unavailable${status}. ${err?.status === 403
-          ? 'Your Gemini API key may be unauthorized, missing, or has run out of quota.'
-          : err?.status === 404
-            ? 'The requested Gemini model was not found. Check the model name in route.ts.'
-            : 'Please try again in a moment.'
-        }`,
+        : err?.status === 429
+          ? 'The AI is currently at its free-tier capacity (Rate Limit Exceeded). Please wait 60 seconds and try again.'
+          : `AI analysis is temporarily unavailable${status}. ${err?.status === 403
+            ? 'Your Gemini API key may be unauthorized, missing, or has run out of quota.'
+            : err?.status === 404
+              ? 'The requested Gemini model was not found. Check the model name in route.ts.'
+              : 'Please try again in a moment.'
+          }`,
     };
   }
 }
