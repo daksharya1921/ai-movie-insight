@@ -260,7 +260,7 @@ export default function Home() {
                             className="text-[9px] uppercase tracking-[0.4em] opacity-30"
                             style={{ fontFamily: "'Space Mono', monospace", color: 'var(--cream)' }}
                         >
-                            © 2026 Movie Insight Builder · Gemini AI
+                            © 2026 Movie Insight Builder · Hugging Face AI
                         </span>
                         <Sparkles className="w-3 h-3" style={{ color: 'var(--gold-dim)', opacity: 0.5 }} />
                     </div>
