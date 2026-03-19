@@ -83,5 +83,5 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 
  ## 👨‍💻 Author
 
-**Daksh Arya**
+**Created by : Daksh Arya**
 GitHub: [@daksharya1921](https://github.com/daksharya1921
